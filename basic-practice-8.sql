@@ -147,25 +147,38 @@ ORDER BY a.nome;
 
 -- 7. Adicione uma nova coluna situacao à tabela matricula, para indicar se o aluno foi "Aprovado" ou "Reprovado".
 ALTER TABLE matricula ADD COLUMN situacao boolean;
-ALTER TABLE matricula ALTER 
+SELECT * from matricula;
+ALTER TABLE matricula ALTER COLUMN situacao TYPE varchar(20);
 
 -- 8. Atualize a coluna situacao da tabela matricula:
 -- Se nota_final >= 7, defina como 'Aprovado'
 -- Caso contrário, defina como 'Reprovado'
 UPDATE matricula as m
-SET situacao = true
-WHERE m.nota_final >= 7;
+SET situacao =
+CASE
+	WHEN m.nota_final >= 7 THEN 'Aprovado'
+	ELSE 'Reprovado'
+END;
 
-UPDATE matricula as m
-SET situacao = false
-WHERE m.nota_final < 7;
 
 SELECT * FROM matricula;
 
 
 -- 9. Mostre os professores que lecionam mais de uma disciplina.
 -- Exiba: nome do professor e a quantidade de disciplinas.
+SELECT p.nome as "Professores", count(d.id_disciplina) as "Quantidade de Disciplinas" FROM professor as p
+JOIN turma as t ON t.id_professor = p.id_professor
+JOIN disciplina as d ON t.id_disciplina = d.id_disciplina
+GROUP BY p.nome;
+
 
 -- 10. Liste os 3 alunos com as maiores notas finais.
 -- Exiba: nome do aluno, nome da disciplina e a nota.
 -- Use ORDER BY nota_final DESC e LIMIT 3.
+SELECT a.nome, d.nome_disciplina, m.nota_final FROM aluno as a
+JOIN matricula as m ON m.id_aluno = a.id_aluno
+JOIN turma as t ON t.id_turma = m.id_turma
+JOIN disciplina as d ON d.id_disciplina = t.id_disciplina
+ORDER BY nota_final DESC LIMIT 3;
+
+
