@@ -113,20 +113,55 @@ JOIN curso as "c" ON c.id_curso = d.id_curso;
 -- 3. Liste todas as disciplinas com o nome do professor responsável.
 -- Ordene o resultado pelo nome do professor (A-Z).
 
+SELECT d.nome_disciplina as "Disciplinas", p.nome as "Professores" FROM disciplina as d
+JOIN turma as t ON t.id_disciplina = d.id_disciplina
+JOIN professor as p ON t.id_professor = p.id_professor
+ORDER BY p.nome;
+
+
 -- 4. Mostre os alunos que tiveram nota final maior ou igual a 7.
 -- Exiba: nome do aluno, nome da disciplina e nota.
+SELECT a.nome, d.nome_disciplina, m.nota_final FROM aluno as a
+JOIN matricula as m ON m.id_aluno = a.id_aluno
+JOIN turma as t ON t.id_turma = m.id_turma
+JOIN disciplina as d ON d.id_disciplina = t.id_disciplina
+WHERE m.nota_final >= 7;
+
 
 -- 5. Liste o nome de todos os cursos e o total de disciplinas em cada um.
 -- Mostre apenas cursos que possuem pelo menos uma disciplina.
+SELECT c.nome_curso, count(d.id_curso) FROM curso as c
+JOIN disciplina as d ON d.id_curso = c.id_curso
+GROUP BY c.nome_curso
+HAVING count(*) >= 1;
+
+
 
 -- 6. Liste o nome dos alunos e a média de suas notas finais nas disciplinas cursadas.
 -- Use AVG() e agrupe por aluno.
+SELECT a.nome as "Alunos", avg(m.nota_final) as "MediaNotas" FROM aluno as a
+JOIN matricula as m ON m.id_aluno = a.id_aluno
+GROUP BY a.nome
+ORDER BY a.nome;
+
 
 -- 7. Adicione uma nova coluna situacao à tabela matricula, para indicar se o aluno foi "Aprovado" ou "Reprovado".
+ALTER TABLE matricula ADD COLUMN situacao boolean;
+ALTER TABLE matricula ALTER 
 
 -- 8. Atualize a coluna situacao da tabela matricula:
 -- Se nota_final >= 7, defina como 'Aprovado'
 -- Caso contrário, defina como 'Reprovado'
+UPDATE matricula as m
+SET situacao = true
+WHERE m.nota_final >= 7;
+
+UPDATE matricula as m
+SET situacao = false
+WHERE m.nota_final < 7;
+
+SELECT * FROM matricula;
+
 
 -- 9. Mostre os professores que lecionam mais de uma disciplina.
 -- Exiba: nome do professor e a quantidade de disciplinas.
